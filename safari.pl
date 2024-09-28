@@ -61,6 +61,8 @@ foreach my $compare (@prevbuf) {
   }
 }
 
+if ( length $hostname >= 50 ) { $hostname = substr( $hostname,0,50 )."..."; }
+
 ($timestamp)          ? $timestamp = substr( $timestamp, 0, -10 ) : undef;
 ($id)                 ? $msg .= "ID: $id\n"                   : undef;
 ( $ip && $port )      ? $msg .= "IP: $ip:$port\n"             : undef;
