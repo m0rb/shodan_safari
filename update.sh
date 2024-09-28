@@ -2,12 +2,12 @@
 exe="/home/morb/shodan/bin/shodan"
 query=''
 
-cd /home/morb/shodan_safari
-
-
 _update() {
 $exe download --limit 100 shodan-latest "$query"
 $exe convert shodan-latest.json.gz images
+$exe parse shodan-latest.json.gz\
+ --fields 'ip_str,port,hostnames,location.city,location.country_code,asn,\
+isp,timestamp,_shodan.id' --separator '_-_-' --no-color > shodan-latest.csv
 }
 
 _clean() { 
@@ -27,4 +27,5 @@ main() {
 _backup;_clean;_update
 }
 
+cd /home/morb/shodan_safari
 main

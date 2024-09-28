@@ -14,12 +14,12 @@ use Mastodon::Client;
 START:
 
 my $wd     = "/home/morb/shodan_safari/";
-my $exe    = "/home/morb/shodan/bin/shodan";
 my $file   = "shodan-latest.json.gz";
 my $track  = "hosts.track";
 my $imgdir = $wd . substr( $file, 0, -8 ) . "-images";
 my $cfg    = read_config_file("config.cfg");
-my ( @previous, $msg );
+my $csv    = $wd . "shodan-latest.csv";
+my ( @previous, @hosts, $msg );
 
 my $mt = Mastodon::Client->new(
   instance        => $cfg->{masto}{instance},
@@ -35,11 +35,12 @@ _setup();
 
 @previous = @{retrieve( $wd . $track )};
 
-my $fields = "ip_str,port,hostnames,location.city,\
-location.country_code,asn,isp,timestamp,_shodan.id";
-
-my @hosts = `$exe parse $file --fields '$fields' --separator '_-_-' --no-color` or die;
-chomp @hosts;
+open (my $fh, "<", $csv);
+while (<$fh>) {
+  chomp;
+  push @hosts, $_;
+}
+close $fh;
 
 START:
 my ( $ip, $port, $hostname, $city, $country, $asn, $isp, $timestamp, $id ) =
@@ -88,6 +89,5 @@ store( \@previous, $wd . $track );
 sub _setup {
   srand;
   unless ( -f $wd . $track ) { store( \@previous, $wd . $track ); }
-  unless ( -f $wd . $file )  { die "No json bundle. Full stop.\n"; }
-  unless ( -d $imgdir )      { `$exe convert $file images` or die; }
+  unless ( -d $imgdir || -f $csv ) { `./update.sh` }
 }
