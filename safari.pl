@@ -11,8 +11,6 @@ use MyLib::ATProto    qw(post_media);
 use Image::Compare;
 use Mastodon::Client;
 
-START:
-
 my $wd     = "/home/morb/shodan_safari/";
 my $file   = "shodan-latest.json.gz";
 my $track  = "hosts.track";
