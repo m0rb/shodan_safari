@@ -19,7 +19,7 @@ my $track  = "hosts.track";
 my $imgdir = $wd . substr( $file, 0, -8 ) . "-images";
 my $cfg    = read_config_file("config.cfg");
 my $csv    = $wd . "shodan-latest.csv";
-my ( @previous, @hosts, $msg );
+my ( @previous, @hosts, $msg, $pass, $ok );
 
 my $mt = Mastodon::Client->new(
   instance        => $cfg->{masto}{instance},
@@ -55,12 +55,13 @@ foreach my $compare (@prevbuf) {
   $cmp->set_method( method => &Image::Compare::THRESHOLD_COUNT, arg => 300 );
   my $return = $cmp->compare;
   if ($return && $return < 350) {
-    push(@previous,$ip."-".$port);
-    goto START;
+    $pass++;
   } else {
-      CORE::break;
+    $ok++;
   }
 }
+
+if ($pass > $ok) { push(@previous,$ip."-".$port) and goto START; }
 
 if ( length $hostname >= 50 ) { $hostname = substr( $hostname,0,50 )."..."; }
 
