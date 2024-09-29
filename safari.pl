@@ -14,7 +14,7 @@ use Mastodon::Client;
 my $wd     = "/home/morb/shodan_safari/";
 my $file   = "shodan-latest.json.gz";
 my $track  = "hosts.track";
-my $imgdir = $wd . substr( $file, 0, -8 ) . "-images";
+my $imgdir = $wd . substr( $file, 0, -8 ) . "-images/";
 my $cfg    = read_config_file("config.cfg");
 my $csv    = $wd . "shodan-latest.csv";
 my ( @previous, @hosts, $msg, $pass, $ok );
@@ -48,8 +48,8 @@ if ( grep( /$ip-$port/, @previous ) ) { goto START; }
 
 my @prevbuf = grep(/$ip/, @previous );
 foreach my $compare (@prevbuf) {
-  $cmp->set_image1( img => $imgdir.$compare."\.jpg", type => "jpeg" );
-  $cmp->set_image2( img => $imgdir."$ip-$port\.jpg", type => "jpeg" );
+  $cmp->set_image1( img => $imgdir . $compare."\.jpg", type => "jpeg" );
+  $cmp->set_image2( img => $imgdir . "$ip-$port\.jpg", type => "jpeg" );
   $cmp->set_method( method => &Image::Compare::THRESHOLD_COUNT, arg => 300 );
   my $return = $cmp->compare;
   if ($return && $return < 350) {
@@ -74,10 +74,10 @@ if ( length $hostname >= 50 ) { $hostname = substr( $hostname,0,50 )."..."; }
 $msg .= "\n#shodansafari #infosec";
 utf8::decode($msg);
 
-if ( -f $imgdir . "/$ip-$port\.jpg" ) {
-  post_media( {account => "safari", text => $msg, fn => $imgdir . "/$ip-$port\.jpg"} );
+if ( -f $imgdir . "$ip-$port\.jpg" ) {
+  post_media( {account => "safari", text => $msg, fn => $imgdir . "$ip-$port\.jpg"} );
   eval {
-    my $mm = $mt->upload_media( $imgdir . "/$ip-$port\.jpg" );
+    my $mm = $mt->upload_media( $imgdir . "$ip-$port\.jpg" );
     $mt->post_status( $msg, {media_ids => [ $mm->{'id'} ]} );
   };
 }
