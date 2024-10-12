@@ -109,6 +109,8 @@ sub imgcrop {
   chomp @fileinfo;
   my $res = $fileinfo[(scalar(@fileinfo) - 2)];
   my ($x,$y) = split("x",$res);
+  ($x%2) ? $x-- : undef;
+  ($y%2) ? $y-- : undef;
   unless($x%2||$y%2) {
   my $seg = ($x/2)."x".($y/2);
   `rm -f outbuf-?.jpg`;
